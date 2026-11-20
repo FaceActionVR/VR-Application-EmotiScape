@@ -1,3 +1,4 @@
+using Telemetry.Interactions;
 using UnityEngine;
 
 public class FlowerWatering : MonoBehaviour
@@ -8,6 +9,10 @@ public class FlowerWatering : MonoBehaviour
 
     [Header("Ustawienia podlewania")]
      private float waterRequired = 0.01f; // Ile wody potrzebuje kwiat
+
+    [Header("Telemetry")]
+    [SerializeField]
+    private InteractionEventLogger interactionLogger;
 
     // Zmieniamy na tablicê, aby przechowaæ renderery wszystkich liœci
     private MeshRenderer[] childRenderers;
@@ -24,6 +29,8 @@ public class FlowerWatering : MonoBehaviour
         {
             SetAllMaterials(dryMaterial);
         }
+
+        ResolveTelemetry();
     }
 
     void OnParticleCollision(GameObject other)
@@ -41,6 +48,14 @@ public class FlowerWatering : MonoBehaviour
         }
     }
 
+    private void ResolveTelemetry()
+    {
+        if (interactionLogger == null)
+        {
+            interactionLogger =
+                FindObjectOfType<InteractionEventLogger>();
+        }
+    }
     void WaterFlower()
     {
         isWatered = true;
@@ -49,6 +64,17 @@ public class FlowerWatering : MonoBehaviour
             // Podmieniamy na MOKRY materia³ na wszystkich liœciach
             SetAllMaterials(wateredMaterial);
             Debug.Log("Wszystkie liœcie zosta³y podlane!");
+
+            ResolveTelemetry();
+
+            if (interactionLogger != null)
+            {
+                interactionLogger.LogPointEvent(
+                    "FLOWER_COLOR_CHANGED",
+                    gameObject.name,
+                    "{\"state\":\"watered\"}"
+                );
+            }
         }
     }
 

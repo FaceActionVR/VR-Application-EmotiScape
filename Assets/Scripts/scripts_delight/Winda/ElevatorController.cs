@@ -1,20 +1,13 @@
 using System.Collections;
+using Telemetry.Interactions;
 using UnityEngine;
 using Unity.XR.CoreUtils;
 
+
 public class ElevatorController : MonoBehaviour
 {
-    // =========================================================
-    // WINDA
-    // =========================================================
-
     [Header("Elevator")]
     [SerializeField] private Rigidbody elevatorRigidbody;
-
-
-    // =========================================================
-    // DRZWI
-    // =========================================================
 
     [Header("Doors")]
     [SerializeField] private Animator doorAnimator;
@@ -22,32 +15,21 @@ public class ElevatorController : MonoBehaviour
     [Tooltip("Ile sekund trwa zamykanie drzwi.")]
     [SerializeField] private float doorCloseTime = 3f;
 
-
-    // =========================================================
-    // DèWI KI DRZWI
-    // =========================================================
+    [Header("Player")]
+    [SerializeField] private ElevatorCabinTrigger cabinTrigger;
 
     [Header("Door Audio")]
     [SerializeField] private AudioSource doorAudioSource;
 
-    [Tooltip("DüwiÍk otwierania drzwi.")]
-    [SerializeField] private AudioClip doorOpenSound;
+    [SerializeField]
+    private AudioClip doorOpenSound;
 
-    [Tooltip("DüwiÍk zamykania drzwi.")]
-    [SerializeField] private AudioClip doorCloseSound;
+    [SerializeField]
+    private AudioClip doorCloseSound;
 
-
-    // =========================================================
-    // GRACZ
-    // =========================================================
-
-    [Header("Player")]
-    [SerializeField] private ElevatorCabinTrigger cabinTrigger;
-
-
-    // =========================================================
-    // RUCH WINDY
-    // =========================================================
+    [Header("Telemetry")]
+    [SerializeField]
+    private InteractionEventLogger interactionLogger;
 
     [Header("Movement")]
 
@@ -57,15 +39,11 @@ public class ElevatorController : MonoBehaviour
     [Tooltip("O ile metrÛw winda ma zjechaÊ w dÛ≥ od pozycji poczπtkowej.")]
     [SerializeField] private float travelDistance = 6f;
 
-
     private Vector3 topPosition;
     private Vector3 bottomPosition;
 
-    private bool isMoving = false;
-
-    // Po dojechaniu drzwi pozostajπ otwarte,
-    // aø gracz kliknie przycisk windy.
-    private bool keepDoorsOpen = false;
+    private bool isMoving;
+    private bool keepDoorsOpen;
 
     private XROrigin passenger;
 
@@ -78,17 +56,15 @@ public class ElevatorController : MonoBehaviour
     {
         if (elevatorRigidbody == null)
         {
-            Debug.LogError(
-                "ElevatorController: Brakuje Rigidbody windy!"
-            );
-
+            Debug.LogError("ElevatorController: Brakuje Rigidbody windy!");
             return;
         }
 
-        // Pozycja poczπtkowa windy = G”RNE piÍtro.
+        // Pozycja, w ktÛrej winda znajduje siÍ na poczπtku gry,
+        // jest traktowana jako G”RNE piÍtro.
         topPosition = elevatorRigidbody.position;
 
-        // Dolne piÍtro.
+        // Dolne piÍtro znajduje siÍ travelDistance metrÛw niøej.
         bottomPosition =
             topPosition + Vector3.down * travelDistance;
 
@@ -98,9 +74,8 @@ public class ElevatorController : MonoBehaviour
         );
     }
 
-
     // =========================================================
-    // PRZYCISK GO - P£YNNA JAZDA
+    // PRZYCISK GO
     // =========================================================
 
     public void GoSmooth()
@@ -108,9 +83,28 @@ public class ElevatorController : MonoBehaviour
         if (!CanTravel())
             return;
 
+        ResolveTelemetry();
+
+        if (interactionLogger != null)
+        {
+            interactionLogger.LogPointEvent(
+                "ELEVATOR_ACTIVATED",
+                "Elevator",
+                "{\"mode\":\"smooth\"}"
+            );
+        }
+
         StartCoroutine(Travel(false));
     }
 
+    private void ResolveTelemetry()
+    {
+        if (interactionLogger == null)
+        {
+            interactionLogger =
+                FindObjectOfType<InteractionEventLogger>();
+        }
+    }
 
     // =========================================================
     // PRZYCISK TELEPORT
@@ -121,9 +115,19 @@ public class ElevatorController : MonoBehaviour
         if (!CanTravel())
             return;
 
+        ResolveTelemetry();
+
+        if (interactionLogger != null)
+        {
+            interactionLogger.LogPointEvent(
+                "ELEVATOR_ACTIVATED",
+                "Elevator",
+                "{\"mode\":\"teleport\"}"
+            );
+        }
+
         StartCoroutine(Travel(true));
     }
-
 
     // =========================================================
     // CZY WINDA MOØE JECHA∆
@@ -165,17 +169,10 @@ public class ElevatorController : MonoBehaviour
         }
 
         if (cabinTrigger.Player == null)
-        {
-            Debug.Log(
-                "Nie moøna uruchomiÊ windy - brak referencji do gracza."
-            );
-
             return false;
-        }
 
         return true;
     }
-
 
     // =========================================================
     // PODR”Ø
@@ -185,37 +182,22 @@ public class ElevatorController : MonoBehaviour
     {
         isMoving = true;
 
-        // ZapamiÍtujemy gracza.
+        // ZapamiÍtujemy gracza znajdujπcego siÍ w windzie.
         passenger = cabinTrigger.Player;
 
-        // Po klikniÍciu przycisku pozwalamy zamknπÊ drzwi.
+        // Od momentu klikniÍcia przycisku drzwi mogπ siÍ zamknπÊ.
         keepDoorsOpen = false;
-
-
-        // =====================================================
-        // ZAMYKANIE DRZWI
-        // =====================================================
-
         SetDoorsOpen(false);
+      
 
-        Debug.Log("Winda: zamykanie drzwi");
-
-
-        // Czekamy aø drzwi siÍ zamknπ.
+        // Poczekaj aø animacja zamykania siÍ zakoÒczy.
         yield return new WaitForSeconds(doorCloseTime);
 
-
-        // =====================================================
-        // WYB”R PI TRA
-        // =====================================================
-
+        // Sprawdü gdzie faktycznie znajduje siÍ winda
+        // i wybierz przeciwne piÍtro.
         Vector3 destination = GetOppositeFloor();
 
-
-        // =====================================================
-        // JAZDA
-        // =====================================================
-
+        // TELEPORT albo normalna jazda.
         if (teleport)
         {
             TeleportElevator(destination);
@@ -225,29 +207,18 @@ public class ElevatorController : MonoBehaviour
             yield return MoveElevator(destination);
         }
 
-
-        // Ma≥a pauza po dojechaniu.
+        // Ma≥a pauza po dotarciu.
         yield return new WaitForSeconds(0.15f);
 
-
-        // =====================================================
-        // OTWIERANIE DRZWI
-        // =====================================================
-
+        // OtwÛrz drzwi.
         SetDoorsOpen(true);
 
-        Debug.Log("Winda: otwieranie drzwi po dojechaniu");
-
-
-        // Drzwi pozostajπ otwarte.
+        // Drzwi pozostajπ otwarte po przyjeüdzie.
         keepDoorsOpen = true;
 
-
-        // Koniec podrÛøy.
         passenger = null;
         isMoving = false;
     }
-
 
     // =========================================================
     // WYBIERANIE PRZECIWNEGO PI TRA
@@ -270,26 +241,21 @@ public class ElevatorController : MonoBehaviour
                 bottomPosition
             );
 
-
-        // Jeúli bliøej gÛry -> jedziemy na dÛ≥.
+        // Jeøeli bliøej nam do gÛry,
+        // jedziemy na dÛ≥.
         if (distanceToTop < distanceToBottom)
         {
-            Debug.Log(
-                "Winda jest na G”RZE -> jedzie na D”£"
-            );
+            Debug.Log("Winda jest na G”RZE -> jedzie na D”£");
 
             return bottomPosition;
         }
 
-
-        // Jeúli bliøej do≥u -> jedziemy na gÛrÍ.
-        Debug.Log(
-            "Winda jest na DOLE -> jedzie na G”R "
-        );
+        // Jeøeli bliøej nam do do≥u,
+        // jedziemy na gÛrÍ.
+        Debug.Log("Winda jest na DOLE -> jedzie na G”R ");
 
         return topPosition;
     }
-
 
     // =========================================================
     // P£YNNA JAZDA
@@ -306,10 +272,8 @@ public class ElevatorController : MonoBehaviour
         {
             yield return new WaitForFixedUpdate();
 
-
             Vector3 oldPosition =
                 elevatorRigidbody.position;
-
 
             Vector3 newPosition =
                 Vector3.MoveTowards(
@@ -318,32 +282,24 @@ public class ElevatorController : MonoBehaviour
                     moveSpeed * Time.fixedDeltaTime
                 );
 
-
             Vector3 movement =
                 newPosition - oldPosition;
 
-
             // Przesuwamy windÍ.
             elevatorRigidbody.MovePosition(newPosition);
-
 
             // Przesuwamy gracza razem z windπ.
             MovePassenger(movement);
         }
 
-
-        // Dok≥adne ustawienie windy na koÒcu.
+        // Dok≥adne ustawienie na koÒcowej pozycji.
         Vector3 finalMovement =
             destination - elevatorRigidbody.position;
 
-
         elevatorRigidbody.position = destination;
 
-
-        // Dok≥adne przesuniÍcie gracza.
         MovePassenger(finalMovement);
     }
-
 
     // =========================================================
     // TELEPORT WINDY
@@ -354,19 +310,15 @@ public class ElevatorController : MonoBehaviour
         Vector3 oldPosition =
             elevatorRigidbody.position;
 
-
         Vector3 movement =
             destination - oldPosition;
-
 
         // Teleport windy.
         elevatorRigidbody.position = destination;
 
-
-        // Teleport gracza.
+        // Teleport gracza o dok≥adnie ten sam dystans.
         TeleportPassenger(movement);
     }
-
 
     // =========================================================
     // GRACZ PODCZAS NORMALNEJ JAZDY
@@ -377,15 +329,10 @@ public class ElevatorController : MonoBehaviour
         if (passenger == null)
             return;
 
-
         CharacterController controller =
             passenger.GetComponent<CharacterController>();
 
-
-        if (
-            controller != null &&
-            controller.enabled
-        )
+        if (controller != null && controller.enabled)
         {
             controller.Move(movement);
         }
@@ -394,7 +341,6 @@ public class ElevatorController : MonoBehaviour
             passenger.transform.position += movement;
         }
     }
-
 
     // =========================================================
     // GRACZ PODCZAS TELEPORTU
@@ -405,24 +351,19 @@ public class ElevatorController : MonoBehaviour
         if (passenger == null)
             return;
 
-
         CharacterController controller =
             passenger.GetComponent<CharacterController>();
-
 
         if (controller != null)
         {
             bool wasEnabled =
                 controller.enabled;
 
-
-            // Wy≥πczamy CharacterController,
-            // øeby nie blokowa≥ teleportu.
+            // Na chwilÍ wy≥πczamy CharacterController,
+            // aby fizyka nie blokowa≥a teleportu.
             controller.enabled = false;
 
-
             passenger.transform.position += movement;
-
 
             controller.enabled = wasEnabled;
         }
@@ -432,21 +373,17 @@ public class ElevatorController : MonoBehaviour
         }
     }
 
-
     // =========================================================
     // OTWIERANIE DRZWI PRZEZ TRIGGER
     // =========================================================
 
     public void OpenDoorsFromProximity()
     {
-        // Podczas jazdy trigger nic nie robi.
         if (isMoving)
             return;
 
-
         SetDoorsOpen(true);
     }
-
 
     // =========================================================
     // ZAMYKANIE DRZWI PRZEZ TRIGGER
@@ -454,21 +391,16 @@ public class ElevatorController : MonoBehaviour
 
     public void CloseDoorsFromProximity()
     {
-        // Podczas jazdy trigger nic nie robi.
         if (isMoving)
             return;
 
-
-        // Po dojechaniu drzwi majπ zostaÊ otwarte.
+        // Po dojechaniu drzwi majπ pozostaÊ otwarte.
         if (keepDoorsOpen)
             return;
 
-
-        // Jeøeli gracz jest wewnπtrz windy,
-        // drzwi pozostajπ otwarte.
-        //
-        // Zamknπ siÍ dopiero po klikniÍciu
-        // przycisku GO / TELEPORT.
+        // Jeøeli gracz znajduje siÍ w kabinie,
+        // drzwi rÛwnieø pozostajπ otwarte.
+        // Zamknπ siÍ dopiero po klikniÍciu GO / TELEPORT.
         if (
             cabinTrigger != null &&
             cabinTrigger.PlayerInside
@@ -477,71 +409,37 @@ public class ElevatorController : MonoBehaviour
             return;
         }
 
-
         SetDoorsOpen(false);
     }
 
-
-    // =========================================================
-    // OTWIERANIE / ZAMYKANIE DRZWI + DèWI K
-    // =========================================================
-
     private void SetDoorsOpen(bool open)
     {
-        if (doorAnimator == null)
+        if(doorAnimator == null)
         {
-            Debug.LogError(
-                "ElevatorController: Brak Animatora drzwi!"
-            );
-
             return;
         }
 
+        bool currentlyOpen = doorAnimator.GetBool("Open");
 
-        // Sprawdzamy aktualny stan.
-        bool currentlyOpen =
-            doorAnimator.GetBool("Open");
-
-
-        // Jeøeli drzwi juø sπ w tym stanie,
-        // nic ponownie nie odpalamy.
-        //
-        // Zapobiega to wielokrotnemu odtwarzaniu
-        // düwiÍku przez trigger.
         if (currentlyOpen == open)
+        {
             return;
-
-
-        // Zmieniamy stan animacji.
+        }
+        
         doorAnimator.SetBool("Open", open);
-
-
-        // Odtwarzamy odpowiedni düwiÍk.
         PlayDoorSound(open);
     }
 
-
-    // =========================================================
-    // DèWI K DRZWI
-    // =========================================================
-
     private void PlayDoorSound(bool opening)
     {
-        if (doorAudioSource == null)
+        if(doorAudioSource == null)
         {
-            Debug.LogWarning(
-                "ElevatorController: Brak Door Audio Source!"
-            );
-
             return;
         }
 
-
         AudioClip clip;
 
-
-        if (opening)
-        {
+        if (opening){
             clip = doorOpenSound;
         }
         else
@@ -549,30 +447,12 @@ public class ElevatorController : MonoBehaviour
             clip = doorCloseSound;
         }
 
-
         if (clip == null)
         {
-            if (opening)
-            {
-                Debug.LogWarning(
-                    "ElevatorController: Brak düwiÍku OTWIERANIA drzwi!"
-                );
-            }
-            else
-            {
-                Debug.LogWarning(
-                    "ElevatorController: Brak düwiÍku ZAMYKANIA drzwi!"
-                );
-            }
-
             return;
         }
 
-
-        // Jeúli jeszcze gra poprzedni düwiÍk,
-        // zatrzymujemy go.
         doorAudioSource.Stop();
-
 
         doorAudioSource.clip = clip;
         doorAudioSource.Play();

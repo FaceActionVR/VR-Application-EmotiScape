@@ -1,0 +1,54 @@
+{
+    "name": "XRInputs",
+    "maps": [
+        {
+            "name": "Eye",
+            "id": "afdb6460-8651-44e1-a235-53e78310dcaa",
+            "actions": [
+                {
+                    "name": "IsTracked",
+                    "type": "Button",
+                    "id": "2df3e2dd-9eed-447f-9d0b-e32d060d927e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "TrackingState",
+                    "type": "Value",
+                    "id": "bbc5428e-10f7-483b-a802-979d186a0d1c",
+                    "expectedControlType": "Integer",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "4378d5f7-eecc-4a8f-b491-19d4444d9814",
+                    "path": "/<OpenXREyeGaze>/isTracked",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "IsTracked",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "fb86458e-8924-45c8-ad78-2f395ee021c8",
+                    "path": "/<OpenXREyeGaze>/trackingState",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TrackingState",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

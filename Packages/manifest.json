@@ -1,18 +1,21 @@
 {
   "dependencies": {
-    "com.unity.collab-proxy": "2.11.2",
+    "com.htc.upm.vive.openxr": "https://github.com/ViveSoftware/VIVE-OpenXR.git?path=com.htc.upm.vive.openxr",
+    "com.unity.collab-proxy": "2.10.0",
     "com.unity.feature.development": "1.0.1",
     "com.unity.feature.vr": "1.0.0",
+    "com.unity.formats.fbx": "5.1.5",
     "com.unity.inputsystem": "1.13.1",
     "com.unity.learn.iet-framework": "4.0.4",
-    "com.unity.mobile.android-logcat": "1.4.7",
+    "com.unity.probuilder": "5.2.3",
     "com.unity.render-pipelines.universal": "14.0.11",
     "com.unity.textmeshpro": "3.0.9",
     "com.unity.timeline": "1.7.7",
     "com.unity.visualscripting": "1.9.4",
     "com.unity.xr.interaction.toolkit": "3.1.2",
     "com.unity.xr.management": "4.5.1",
-    "com.unity.xr.openxr": "1.12.1",
+    "com.unity.xr.openxr": "1.14.1",
+    "org.khronos.unitygltf": "https://github.com/KhronosGroup/UnityGLTF.git",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -43,16 +46,6 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0",
-    "org.khronos.unitygltf": "2.21.0"
-  },
-  "scopedRegistries": [
-    {
-      "name": "Needle",
-      "url": "https://packages.needle.tools",
-      "scopes": [
-        "org.khronos.unitygltf"
-      ]
-    }
-  ]
+    "com.unity.modules.xr": "1.0.0"
+  }
 }

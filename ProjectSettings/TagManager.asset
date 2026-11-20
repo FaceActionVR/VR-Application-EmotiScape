@@ -5,17 +5,14 @@ TagManager:
   serializedVersion: 2
   tags:
   - Anchor
-  - Diamond
-  - Water
-  - Seed
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Diamond
+  - 
   - Water
   - UI
-  - WaterCan
+  - GazeTargets
   - Potion_BlackWhite_Volum
   - 
   - 

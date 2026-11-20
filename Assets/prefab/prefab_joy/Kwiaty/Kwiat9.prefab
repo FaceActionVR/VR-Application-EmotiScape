@@ -498,6 +498,59 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!1 &3308053812643585828
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1527945839656581804}
+  - component: {fileID: 4129398571046960237}
+  m_Layer: 6
+  m_Name: __GAZE_HITBOX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1527945839656581804
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3308053812643585828}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.000000014901159, y: -0.000000009313225, z: 0.99911225, w: 0.04212728}
+  m_LocalPosition: {x: 0, y: -0, z: 2.15}
+  m_LocalScale: {x: 2.173479, y: 2.3508937, z: 4.251749}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 4085166841999023345}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4129398571046960237
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3308053812643585828}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3342310065385846925
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,6 +618,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dryMaterial: {fileID: 2100000, guid: fce7dd17658e03a40a107ca47a1ae1ae, type: 2}
   wateredMaterial: {fileID: 2100000, guid: db54a8f57744ff64c822435715d6b134, type: 2}
+  interactionLogger: {fileID: 0}
 --- !u!65 &8350453848592240588
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -977,6 +1031,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7926854434831950289}
+  - {fileID: 1527945839656581804}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7117957151351264615

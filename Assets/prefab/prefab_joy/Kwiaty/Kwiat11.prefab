@@ -198,6 +198,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9032376024509413504}
+  - {fileID: 7765175165271549075}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &6533775352194124857
@@ -576,6 +577,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dryMaterial: {fileID: 2100000, guid: 119bf18d65b72fc4bb227f04520bfce8, type: 2}
   wateredMaterial: {fileID: 2100000, guid: 36f24ebc848b9d1478cdfe06010d7cff, type: 2}
+  interactionLogger: {fileID: 0}
 --- !u!54 &3861485811650603551
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -603,6 +605,59 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!1 &7704860877801662222
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7765175165271549075}
+  - component: {fileID: 6020609711270381962}
+  m_Layer: 6
+  m_Name: __GAZE_HITBOX
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7765175165271549075
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7704860877801662222}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.00000006170011, y: 0.0000000018626449, z: 0.17706357, w: 0.9841994}
+  m_LocalPosition: {x: 0, y: 0, z: 1.29}
+  m_LocalScale: {x: 2.1734724, y: 2.3509002, z: 2.6334417}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7418148855482457866}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6020609711270381962
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7704860877801662222}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &8447940410366940306
 GameObject:
   m_ObjectHideFlags: 0

@@ -1,3 +1,4 @@
+using Telemetry.Interactions;
 using UnityEngine;
 
 public class WaterPour : MonoBehaviour
@@ -17,6 +18,10 @@ public class WaterPour : MonoBehaviour
     public float maxWaterAmount = 3f;
     public float pourRate = 0.2f; // 0.2 = jeden poziom po 5 sekundach
 
+    [Header("Telemetry")]
+    [SerializeField]
+    private InteractionEventLogger interactionLogger;
+
     void Start()
     {
         if (waterParticles != null)
@@ -28,6 +33,7 @@ public class WaterPour : MonoBehaviour
 
         waterAmount = Mathf.Clamp(waterAmount, 0f, maxWaterAmount);
         UpdateWaterVisuals();
+        ResolveTelemetry();
     }
 
     void Update()
@@ -58,11 +64,36 @@ public class WaterPour : MonoBehaviour
         }
         
     }
+    private void ResolveTelemetry()
+    {
+        if (interactionLogger == null)
+        {
+            interactionLogger =
+                FindObjectOfType<InteractionEventLogger>();
+        }
+    }
+
     public void Refill(float amount)
     {
+        float previousAmount = waterAmount;
         waterAmount += amount;
         waterAmount = Mathf.Clamp(waterAmount, 0f, maxWaterAmount);
         UpdateWaterVisuals();
+
+        if (previousAmount < maxWaterAmount &&
+        waterAmount >= maxWaterAmount)
+        {
+            ResolveTelemetry();
+
+            if (interactionLogger != null)
+            {
+                interactionLogger.LogPointEvent(
+                    "WATERING_CAN_REFILLED",
+                    gameObject.name,
+                    "{\"state\":\"full\"}"
+                );
+            }
+        }
     }
 
     void StopPouring()

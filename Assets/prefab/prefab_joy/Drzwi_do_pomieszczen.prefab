@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7867797105148060643}
   - component: {fileID: 3460216183869976522}
   - component: {fileID: 216886450046416966}
-  - component: {fileID: 7823439710688760015}
+  - component: {fileID: 104343375423780772}
   m_Layer: 0
   m_Name: Klamka
   m_TagString: Untagged
@@ -153,7 +153,7 @@ MonoBehaviour:
   targetOpenAngle: 13.5
   targetSceneName: scene_hub
   delayBeforeLoad: 0.5
---- !u!114 &7823439710688760015
+--- !u!114 &104343375423780772
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
